@@ -389,6 +389,10 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
                                      [opt['premise'] + opt['hypothesis'] for opt in options],
                                      model, cache=cache, batch=batch, calculate = calculate)
 
+        channel_ce = cross_entropy_list([opt['hypothesis'] for opt in options],
+                                     [opt['premise'] for opt in options],
+                                     model, cache=cache, batch=batch, calculate = calculate)
+
     ## get average CE by token
     if gpt3:
         avg_cond_ce = [ce/l for ce, l in zip(cond_ce, cond_t_lens)]
@@ -405,7 +409,6 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
     pmi = [ce_0 - ce_1 for ce_0,ce_1 in zip(uncond_ce, cond_ce)]
     divide_by_joint = [ce_0 - ce_1 for ce_0,ce_1 in zip(cond_ce, joint_ce)]
     pmi_joint = [ce_0 + ce_1 - ce_2 for ce_0,ce_1,ce_2 in zip(cond_ce, joint_ce, domain_cond_ce)]
-    
     ## make predictions based on different scores
     lm_pred = cond_ce.index(min(cond_ce))
     lm_avg_pred = avg_cond_ce.index(min(avg_cond_ce))
@@ -413,7 +416,9 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
     dcpmi_pred = dcpmi.index(max(dcpmi))
     pmi_pred = pmi.index(max(pmi))
     pmi_joint_pred = pmi_joint.index(min(pmi_joint))
-    divide_by_joint_pred = divide_by_joint.index(min(divide_by_joint))
+    # divide_by_joint_pred = divide_by_joint.index(min(divide_by_joint))
+    channel_pred = channel_ce.index(min(channel_ce))
+
     pred = {
                  'lm': lm_pred,
                  'tok_mean': lm_avg_pred,
@@ -421,7 +426,8 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
                  'pmi': pmi_pred,
                  'domain_cond': lm_domain_cond_pred,
                  'pmi_joint':pmi_joint_pred,
-                 'divide_by_joint':divide_by_joint_pred
+                #  'divide_by_joint':divide_by_joint_pred,
+                 'channel_pred': channel_pred,
            }
     return pred
 
