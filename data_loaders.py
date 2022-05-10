@@ -392,7 +392,7 @@ def load_examples_snli(path):
 
 
 
-def load_examples_sst5(path):
+def load_examples_sst5(path, ex_path=None, n_shot=None):
     data = []
     with open(path) as f:
         for line in f:
@@ -402,10 +402,42 @@ def load_examples_sst5(path):
             d['correct_hypothesis'] = label-1
             d['sentence'] = s
             data.append(d)
+    
+    if ex_path is None:
+        assert(n_shot is None)
+        fewshot_prefix = None
+    else:
+        assert(n_shot is not None)
+        with open(ex_path) as lines:
+            fewshot_examples = []
+            for i, line in enumerate(lines):
+                l, s = line.strip().split('\t')
+                fewshot_prefix = f" {s}:"
+                label = int(l[-1])
+                if label == 1:
+                    fewshot_prefix = f"{fewshot_prefix} very negative."
+                elif label == 2:
+                    fewshot_prefix = f"{fewshot_prefix} somewhat negative."
+                elif label == 3:
+                    fewshot_prefix = f"{fewshot_prefix} neutral."
+                elif label == 4:
+                    fewshot_prefix = f"{fewshot_prefix} somewhat positive."
+                elif label == 5:
+                    fewshot_prefix = f"{fewshot_prefix} very positive."
+                else:
+                    raise NotImplementedError("this should be impossible")
+                fewshot_examples.append(fewshot_prefix)
+                
+        random.shuffle(fewshot_examples)
+        fewshot_prefix = ''
+        for ex in fewshot_examples[:n_shot]:
+            fewshot_prefix = fewshot_prefix + ex
 
     examples = []
     for d in data:
         premise = f"\"{d['sentence']}\" has a tone that is"
+        if fewshot_prefix is not None:
+            premise = fewshot_prefix + premise
         options = []
         for h in [' very negative.', ' somewhat negative.', ' neutral.', ' somewhat positive.', ' very positive.']:
             o = {}
