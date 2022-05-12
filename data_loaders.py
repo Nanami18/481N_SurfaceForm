@@ -772,7 +772,7 @@ def load_examples_boolq(path):
         examples.append({'options' : options, 'label' : label })
     return examples
 
-def load_examples_trec(path):
+def load_examples_trec(path, ex_path=None, n_shot=None):
     
     label2template = [(0, 'DESC', 'a description.'),
                       (1, 'ENTY', 'an entity.'),
@@ -783,6 +783,24 @@ def load_examples_trec(path):
     # get index of the label string
 
     examples = []
+    fewshot_prefix = None
+
+    if n_shot is not None:
+        assert(ex_path is not None)
+        with open(ex_path) as lines:
+            fewshot_examples = []
+            for i, line in enumerate(lines):
+                tokens = line.strip().split(',')
+                l = tokens[0]
+                s = ','.join(tokens[1:])
+                fewshot_prefix = f" {s}"
+                label = int(l)
+                fewshot_prefix = f"{fewshot_prefix} The answer to this question will be {label2template[label][2]}\n"
+                fewshot_examples.append(fewshot_prefix)
+            
+            fewshot_prefix = ''
+            for ex in fewshot_examples[:n_shot]:
+                fewshot_prefix = fewshot_prefix + ex
     
     # params
     with open(path) as f:
@@ -795,6 +813,8 @@ def load_examples_trec(path):
             for label_idx, label_surface_form, h in label2template:
                 opt = {} 
                 opt['premise'] = f' {question} The answer to this question will be'
+                if n_shot is not None:
+                    opt['premise'] = fewshot_prefix + opt['premise']
                 opt['hypothesis'] = f' {h}'
                 opt['uncond_premise'] = ' The answer to this question will be'
                 opt['uncond_hypothesis'] = f' {h}'
