@@ -478,9 +478,9 @@ def load_examples_sst2(path, ex_path=None, n_shot=None):
                 if label == 0:
                     continue
                 elif label > 0:
-                    fewshot_prefix = f"{fewshot_prefix} positive\n"
+                    fewshot_prefix = f"{fewshot_prefix} has a tone that is positive\n"
                 elif label < 0:
-                    fewshot_prefix = f"{fewshot_prefix} negative\n"
+                    fewshot_prefix = f"{fewshot_prefix} has a tone that is negative\n"
                 else:
                     raise NotImplementedError("this should be impossible")
                 fewshot_examples.append(fewshot_prefix)
