@@ -64,7 +64,10 @@ def get_examples(dataset_name, split, stem, n_shot, variant):
         closed_label_space = False
     elif dataset_name == 'obqa':
         from data_loaders import load_examples_obqa
-        examples = load_examples_obqa(f'{stem}{split}.jsonl')
+        if n_shot > 0:
+            examples = load_examples_obqa(f'{stem}{split}.jsonl', f'{stem}/train.jsonl', n_shot)
+        else:
+            examples = load_examples_obqa(f'{stem}{split}.jsonl')
         closed_label_space = False
     elif dataset_name == 'cqa':
         from data_loaders import load_examples_cqa
@@ -96,7 +99,10 @@ def get_examples(dataset_name, split, stem, n_shot, variant):
         closed_label_space = True
     elif dataset_name == 'sst-5':
         from data_loaders import load_examples_sst5
-        examples = load_examples_sst5(f'{stem}{split}.tsv')
+        if n_shot > 0:
+            examples = load_examples_sst5(f'{stem}{split}.tsv', f'{stem}/train.tsv', n_shot)
+        else:
+            examples = load_examples_sst5(f'{stem}{split}.tsv')
         closed_label_space = True
     elif dataset_name == 'agn':
         from data_loaders import load_examples_agn
