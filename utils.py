@@ -389,9 +389,9 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
                                      [opt['premise'] + opt['hypothesis'] for opt in options],
                                      model, cache=cache, batch=batch, calculate = calculate)
 
-        channel_ce = cross_entropy_list([opt['hypothesis'] for opt in options],
-                                     [opt['premise'] for opt in options],
-                                     model, cache=cache, batch=batch, calculate = calculate)
+        # channel_ce = cross_entropy_list([opt['hypothesis'] for opt in options],
+        #                              [opt['premise'] for opt in options],
+        #                              model, cache=cache, batch=batch, calculate = calculate)
 
     ## get average CE by token
     if gpt3:
@@ -407,7 +407,7 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
     # calculate dcpmi
     dcpmi = [ce_0 - ce_1 for ce_0,ce_1 in zip(domain_cond_ce, cond_ce)]
     pmi = [ce_0 - ce_1 for ce_0,ce_1 in zip(uncond_ce, cond_ce)]
-    divide_by_joint = [ce_0 - ce_1 for ce_0,ce_1 in zip(cond_ce, joint_ce)]
+    # divide_by_joint = [ce_0 - ce_1 for ce_0,ce_1 in zip(cond_ce, joint_ce)]
     pmi_joint = [ce_0 + ce_1 - ce_2 for ce_0,ce_1,ce_2 in zip(cond_ce, joint_ce, domain_cond_ce)]
     ## make predictions based on different scores
     lm_pred = cond_ce.index(min(cond_ce))
@@ -417,7 +417,7 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
     pmi_pred = pmi.index(max(pmi))
     pmi_joint_pred = pmi_joint.index(min(pmi_joint))
     # divide_by_joint_pred = divide_by_joint.index(min(divide_by_joint))
-    channel_pred = channel_ce.index(min(channel_ce))
+    # channel_pred = channel_ce.index(min(channel_ce))
 
     pred = {
                  'lm': lm_pred,
@@ -425,9 +425,9 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
                  'dcpmi' : dcpmi_pred,
                  'pmi': pmi_pred,
                  'domain_cond': lm_domain_cond_pred,
-                 'pmi_joint':pmi_joint_pred,
+                 'pmi_joint':pmi_joint_pred
                 #  'divide_by_joint':divide_by_joint_pred,
-                 'channel_pred': channel_pred,
+                #  'channel_pred': channel_pred,
            }
     return pred
 
