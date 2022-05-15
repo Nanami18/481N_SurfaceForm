@@ -128,6 +128,8 @@ if __name__ == '__main__':
     import torch
     import os
     import pdb
+    from collections import defaultdict
+    from statistics import stdev, mean
 
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset', type=str)
@@ -140,31 +142,66 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--key', type=str, default='api.key')
     parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--seeds', nargs='+', default=None)
     args = parser.parse_args()
     print(args)
 
     if args.debug:
         pdb.set_trace()
 
-    os.environ['PYTHONHASHSEED'] = str(args.seed)
-    random.seed(args.seed)
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
-    torch.cuda.manual_seed_all(args.seed)
+    if not args.seeds:
+        os.environ['PYTHONHASHSEED'] = str(args.seed)
+        random.seed(args.seed)
+        np.random.seed(args.seed)
+        torch.manual_seed(args.seed)
+        torch.cuda.manual_seed(args.seed)
+        torch.cuda.manual_seed_all(args.seed)
 
-    model, encoder, name = get_model(args.model, args.key)
-    if args.dataset.endswith('-rev'):
-        stem = f'data/{args.dataset[:-4]}/'
+        model, encoder, name = get_model(args.model, args.key)
+        if args.dataset.endswith('-rev'):
+            stem = f'data/{args.dataset[:-4]}/'
+        else:
+            stem = f'data/{args.dataset}/'
+        examples, closed_label_space = get_examples(args.dataset, args.split, stem, args.n_shot, args.variant)
+        if args.sample:
+            assert(args.sample <= len(examples))
+            examples = random.sample(examples, args.sample)
+        accs = score(model, args.model, encoder, examples, stem, args.split, args.batch)
+
+        # print results
+        print(f'{name} gets {accs}% on {args.dataset}')
+        # print(f"{accs['domain_cond']} & {accs['lm']} & {accs['tok_mean']} & {accs['pmi']} & {accs['dcpmi']}")
+        # print(f"{accs['domain_cond']}, {accs['lm']}, {accs['tok_mean']}, {accs['dcpmi']}")
+
     else:
-        stem = f'data/{args.dataset}/'
-    examples, closed_label_space = get_examples(args.dataset, args.split, stem, args.n_shot, args.variant)
-    if args.sample:
-        assert(args.sample <= len(examples))
-        examples = random.sample(examples, args.sample)
-    accs = score(model, args.model, encoder, examples, stem, args.split, args.batch)
+        acc_list = defaultdict(list)
+        for s in args.seeds:
+            s = int(s)
+            os.environ['PYTHONHASHSEED'] = str(s)
+            random.seed(s)
+            np.random.seed(s)
+            torch.manual_seed(s)
+            torch.cuda.manual_seed(s)
+            torch.cuda.manual_seed_all(s)
 
-    # print results
-    print(f'{name} gets {accs}% on {args.dataset}')
-    # print(f"{accs['domain_cond']} & {accs['lm']} & {accs['tok_mean']} & {accs['pmi']} & {accs['dcpmi']}")
-    # print(f"{accs['domain_cond']}, {accs['lm']}, {accs['tok_mean']}, {accs['dcpmi']}")
+            model, encoder, name = get_model(args.model, args.key)
+            if args.dataset.endswith('-rev'):
+                stem = f'data/{args.dataset[:-4]}/'
+            else:
+                stem = f'data/{args.dataset}/'
+            examples, closed_label_space = get_examples(args.dataset, args.split, stem, args.n_shot, args.variant)
+            if args.sample:
+                assert(args.sample <= len(examples))
+                examples = random.sample(examples, args.sample)
+            accs = score(model, args.model, encoder, examples, stem, args.split, args.batch)
+
+            # print results
+            print(f'{name} gets {accs}% on {args.dataset}')
+            for k, v in accs.items():
+                acc_list[k].append(v)
+        
+        for k, v in acc_list.items():
+            k_mean = mean(v)
+            k_std = stdev(v)
+            k_min = min(v)
+            print("{}, mean: {:.3f}, std: {:.3f}, worse: {:.3f}".format(k, k_mean, k_std, k_min))
