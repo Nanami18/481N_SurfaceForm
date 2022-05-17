@@ -152,9 +152,27 @@ def load_examples_storycloze(path, return_tuple = False):
                         'label':d['correct_hypothesis']}]
     return examples
 
-def load_examples_hellaswag(path):
+def load_examples_hellaswag(path, ex_path=None, n_shot=None):
     data = []
     with open(path) as f:
+        if ex_path is None:
+            assert(n_shot is None)
+            fewshot_prefix = None
+        else:
+            assert(n_shot is not None)
+            with open(ex_path) as ex_lines:
+                fewshot_examples = []
+                for line in ex_lines:
+                    d = json.loads(line)
+                    premise = d["ctx"].strip()
+                    fewshot_prefix = f" {premise} {d['endings'][d['label']]}"
+                    fewshot_examples.append(fewshot_prefix)
+                    
+            random.shuffle(fewshot_examples)
+            fewshot_prefix = ''
+            for ex in fewshot_examples[:n_shot]:
+                fewshot_prefix = fewshot_prefix + ex
+                
         for line in f:
             data += [json.loads(line)]
     examples = []
@@ -678,7 +696,7 @@ def load_examples_obqa(path, ex_path=None, n_shot=None):
                     label = j['answerKey']
                     q = j['question']
                     stem = q['stem']
-                    fewshot_prefix = f" {stem}:"
+                    fewshot_prefix = f" {stem}"
                     choices = q['choices']
                     for idx, choice in enumerate(choices):
                         if label == choice['label']:

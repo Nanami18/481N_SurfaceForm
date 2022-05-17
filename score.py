@@ -49,7 +49,10 @@ def get_examples(dataset_name, split, stem, n_shot, variant):
         closed_label_space = False
     elif dataset_name == 'hellaswag':
         from data_loaders import load_examples_hellaswag
-        examples = load_examples_hellaswag(f'{stem}dev.jsonl')
+        if n_shot > 0:
+            examples = load_examples_hellaswag(f'{stem}{split}.jsonl', f'{stem}/train.jsonl', n_shot)
+        else:
+            examples = load_examples_hellaswag(f'{stem}dev.jsonl')
         closed_label_space = False
     elif dataset_name == 'race-m' or \
          dataset_name == 'race-h':
