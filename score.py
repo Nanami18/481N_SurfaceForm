@@ -78,7 +78,10 @@ def get_examples(dataset_name, split, stem, n_shot, variant):
         closed_label_space = False
     elif dataset_name == 'boolq':
         from data_loaders import load_examples_boolq
-        examples = load_examples_boolq(f'{stem}dev.jsonl')
+        if n_shot > 0:
+            examples = load_examples_boolq(f'{stem}dev.jsonl', f'{stem}/train.jsonl', n_shot)
+        else:
+            examples = load_examples_boolq(f'{stem}dev.jsonl')
         closed_label_space = True
     elif dataset_name == 'rte':
         from data_loaders import load_examples_rte
