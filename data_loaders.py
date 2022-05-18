@@ -750,39 +750,11 @@ def proc_question(s):
     s = s + '?'
     return s
 
-def load_examples_boolq(path, ex_path=None, n_shot=None):
+def load_examples_boolq(path):
     data = []
     with open(path) as f:
         for line in f:
             data += [json.loads(line)]
-
-    if ex_path is None:
-      assert(n_shot is None)
-      fewshot_prefix = None
-    else:
-        assert (n_shot is not None)
-        fewshot_examples = []
-        fewshot_positive = []
-        fewshot_negative = []
-        for d in data:
-            fewshot_prefix = f' title: {d["title"]}\n question: {proc_question(d["question"])}\n answer:'
-            label = 'yes' if d['answer'] else 'no'
-            fewshot_prefix = f'{fewshot_prefix} {label}'
-            if d['answer']:
-                fewshot_positive.append(fewshot_prefix)
-            else:
-                fewshot_negative.append(fewshot_prefix)
-        i = 0
-        while len(fewshot_examples) < n_shot:
-            fewshot_examples.append(fewshot_positive[i])
-            if len(fewshot_examples) == n_shot:
-                break
-            fewshot_examples.append(fewshot_negative[i])
-            i += 1
-        random.shuffle(fewshot_examples)
-        fewshot_prefix = ''
-        for ex in fewshot_examples:
-            fewshot_prefix = fewshot_prefix + ex
 
     examples = []
     for d in data:
