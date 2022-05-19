@@ -50,9 +50,9 @@ def get_examples(dataset_name, split, stem, n_shot, variant):
     elif dataset_name == 'hellaswag':
         from data_loaders import load_examples_hellaswag
         if n_shot > 0:
-            examples = load_examples_hellaswag(f'{stem}{split}.jsonl', f'{stem}/train.jsonl', n_shot)
+            examples = load_examples_hellaswag(f'{stem}/dev.jsonl', f'{stem}/train.jsonl', n_shot)
         else:
-            examples = load_examples_hellaswag(f'{stem}dev.jsonl')
+            examples = load_examples_hellaswag(f'{stem}/dev.jsonl')
         closed_label_space = False
     elif dataset_name == 'race-m' or \
          dataset_name == 'race-h':
@@ -77,7 +77,10 @@ def get_examples(dataset_name, split, stem, n_shot, variant):
         if args.split == 'test':
             raise NotImplementedError("CSQA does not release test answers directly, please do not spam their leaderboard either :)")
         else:
-            examples = load_examples_cqa(f'{stem}{split}.jsonl')
+            if n_shot > 0:
+                examples = load_examples_cqa(f'{stem}/dev.jsonl', f'{stem}/train.jsonl', n_shot)
+            else:
+                examples = load_examples_cqa(f'{stem}{split}.jsonl')
         closed_label_space = False
     elif dataset_name == 'boolq':
         from data_loaders import load_examples_boolq
