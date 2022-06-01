@@ -211,7 +211,7 @@ def load_examples_cqa(path, return_tuple=False, ex_path=None, n_shot=None):
                 else:
                     premise = premise[:-1] ## trim the punctuation, will add a question mark
 
-                fewshot_prefix = f" {premise}? the answer is: {(d['question']['choices'][['A','B','C','D','E'].index(d['answerKey'])]['text']).lower()}"
+                fewshot_prefix = f" {premise} {(d['question']['choices'][['A','B','C','D','E'].index(d['answerKey'])]['text']).lower()}"
                 fewshot_examples.append(fewshot_prefix)
                 
         random.shuffle(fewshot_examples)
@@ -525,7 +525,7 @@ def load_examples_sst5(path, ex_path=None, n_shot=None, balanced=True):
 
     examples = []
     for d in data:
-        premise = f"\"{d['sentence']}\" has a tone that is"
+        premise = f"{d['sentence']}:"
         if fewshot_prefix is not None:
             premise = fewshot_prefix + premise
         options = []
