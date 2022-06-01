@@ -1,6 +1,6 @@
 # Surface Form Competition
 
-This is the official repo of the paper ["Surface Form Competition: Why the Highest Probability Answer Isn't Always Right"](https://peterwestuw.github.io/surface-form-competition-project/) We provide scripts for downloading/processing datasets and for reproducing our results on GPT-2 and GPT-3. We do not guarantee exact reproducibility, as library versions and GPUs may cause small differences, but these should be extremely minor.
+This is the repo for reproducing the paper "Surface Form Competition: Why the Highest Probability Answer Isn't Always Right". We adopted scripts from the [origianl repo](https://peterwestuw.github.io/surface-form-competition-project/) for downloading/processing datasets and running the model, and added features on top of it.
 
 ## Dependencies
 We use python3 and pytorch 1.7.0, but we do not use cutting-edge features from either and expect to be largely forward and backward compatible. That is not a guarantee or promise.
@@ -18,7 +18,7 @@ To use GPT-3 you must use OpenAI Beta, which is limited access. You can apply fo
 Once you have a dataset downloaded, running all the zero-shot scoring strategies at once is as simple as:
 
 ```
-python score.py <dataset abbrevation> --model <model>
+python score.py <dataset abbrevation> --model <model> --seed <seed> --seeds <set of seeds>
 ```
 
-where `<dataset-abbreviation>` is the abbreviation for a given dataset used for table rows in the paper. If there is any confusion, simply look in `score.py` to see how dataset selection works. `<model>` is the name of either a GPT-2 or GPT-3 model e.g. `xl`, `davinci`, etc. To speed things up you can use a larger `--batch` if you have enough GPU memory.
+where **<dataset-abbreviation>** is the abbreviation for a given dataset used for table rows in the paper. **--seed** takes an integer and use it to set the random seed. **--seeds** take a list of integers as argument(separated by white space), and will run the experiment using each integer in the list ads the random seed, this overwrite the -seed argument. If there is any confusion, simply look in `score.py` to see how dataset selection works. **--model** is the name of either a GPT-2 or GPT-3 model e.g. `xl`, `davinci`, etc. To speed things up you can use a larger **--batch** if you have enough GPU memory. 
