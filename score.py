@@ -34,7 +34,7 @@ def get_model(model_name, key_file):
         raise ValueError(f'No model {model_name}')
     return model, encoder, name
 
-def get_examples(dataset_name, split, stem, n_shot, variant):
+def get_examples(dataset_name, split, stem, n_shot, variant, seed=None):
     if dataset_name == 'copa':
         from data_loaders import load_examples_copa
         examples = load_examples_copa(f'{stem}copa-{split}.xml')
@@ -75,7 +75,7 @@ def get_examples(dataset_name, split, stem, n_shot, variant):
     elif dataset_name == 'cqa':
         from data_loaders import load_examples_cqa
         if args.split == 'test':
-            raise NotImplementedError("CSQA does not release test answers directly, please do not spam their leaderboard either :)")
+            examples = load_examples_cqa(f'{stem}dev.jsonl')
         else:
             if n_shot > 0:
                 examples = load_examples_cqa(f'{stem}/dev.jsonl', ex_path=f'{stem}/train.jsonl', n_shot=n_shot)
@@ -112,12 +112,18 @@ def get_examples(dataset_name, split, stem, n_shot, variant):
         closed_label_space = True
     elif dataset_name == 'agn':
         from data_loaders import load_examples_agn
-        examples = load_examples_agn(f'{stem}{split}.csv')
+        if n_shot is not None:
+            examples = load_examples_agn(f'{stem}{split}.csv', f'{stem}agnews_balanced/16-{s}/train.tsv', n_shot)
+        else:
+            examples = load_examples_agn(f'{stem}{split}.csv')
         closed_label_space = True
     elif dataset_name == 'trec':
         split = 'train' if split == 'dev' else split
         from data_loaders import load_examples_trec
-        examples = load_examples_trec(f'{stem}{split}.txt')
+        if n_shot is not None:
+            examples = load_examples_trec(f'{stem}{split}.txt', f'{stem}trec_balanced/16-{s}/train.csv', n_shot)
+        else:
+            examples = load_examples_trec(f'{stem}{split}.txt')
         closed_label_space = True
     else:
         raise ValueError(f'Unknown dataset {dataset_name}')
@@ -195,7 +201,7 @@ if __name__ == '__main__':
                 stem = f'data/{args.dataset[:-4]}/'
             else:
                 stem = f'data/{args.dataset}/'
-            examples, closed_label_space = get_examples(args.dataset, args.split, stem, args.n_shot, args.variant)
+            examples, closed_label_space = get_examples(args.dataset, args.split, stem, args.n_shot, args.variant, s)
             if args.sample:
                 assert(args.sample <= len(examples))
                 examples = random.sample(examples, args.sample)
@@ -211,3 +217,7 @@ if __name__ == '__main__':
             k_std = stdev(v)
             k_min = min(v)
             print("{}, mean: {:.3f}, std: {:.3f}, worse: {:.3f}".format(k, k_mean, k_std, k_min))
+        
+        with open("result.json", 'w') as f:
+            import json
+            json.dump(acc_list, f)
