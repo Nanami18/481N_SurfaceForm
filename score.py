@@ -66,8 +66,10 @@ def get_examples(dataset_name, split, stem, n_shot, variant, seed=None):
         examples = load_examples_arc(f'{stem}{split}.jsonl')
         closed_label_space = False
     elif dataset_name == 'obqa':
-        from data_loaders import load_examples_obqa
-        if n_shot > 0:
+        from data_loaders import load_examples_obqa, load_examples_obqa_variants
+        if variant is not None:
+            examples = load_examples_obqa_variants(f'{stem}{split}.jsonl', variant)
+        elif n_shot > 0:
             examples = load_examples_obqa(f'{stem}{split}.jsonl', ex_path=f'{stem}/train.jsonl', n_shot=n_shot)
         else:
             examples = load_examples_obqa(f'{stem}{split}.jsonl')
@@ -83,8 +85,11 @@ def get_examples(dataset_name, split, stem, n_shot, variant, seed=None):
                 examples = load_examples_cqa(f'{stem}{split}.jsonl')
         closed_label_space = False
     elif dataset_name == 'boolq':
-        from data_loaders import load_examples_boolq
-        examples = load_examples_boolq(f'{stem}dev.jsonl')
+        from data_loaders import load_examples_boolq, load_examples_boolq_variants
+        if variant > 0:
+            examples = load_examples_boolq_variants(f'{stem}dev.jsonl', variant)
+        else:
+            examples = load_examples_boolq(f'{stem}dev.jsonl')
         closed_label_space = True
     elif dataset_name == 'rte':
         from data_loaders import load_examples_rte
@@ -104,23 +109,29 @@ def get_examples(dataset_name, split, stem, n_shot, variant, seed=None):
             examples = load_examples_sst2(f'{stem}{split}.tsv')
         closed_label_space = True
     elif dataset_name == 'sst-5':
-        from data_loaders import load_examples_sst5
+        from data_loaders import load_examples_sst5, load_examples_sst5_variants
         if n_shot > 0:
-            examples = load_examples_sst5(f'{stem}{split}.tsv', ex_path=f'{stem}/train.tsv', n_shot=n_shot)
+            examples = load_examples_sst5(f'{stem}{split}.tsv', f'{stem}/train.tsv', n_shot)
+        elif variant is not None:
+            examples = load_examples_sst5_variants(f'{stem}{split}.tsv', variant)
         else:
             examples = load_examples_sst5(f'{stem}{split}.tsv')
         closed_label_space = True
     elif dataset_name == 'agn':
-        from data_loaders import load_examples_agn
-        if n_shot is not None:
+        from data_loaders import load_examples_agn, load_examples_agn_variants
+        if variant is not None:
+            examples = load_examples_agn_variants(f'{stem}{split}.csv', variant)
+        elif n_shot is not None:
             examples = load_examples_agn(f'{stem}{split}.csv', f'{stem}agnews_balanced/16-{s}/train.tsv', n_shot)
         else:
             examples = load_examples_agn(f'{stem}{split}.csv')
         closed_label_space = True
     elif dataset_name == 'trec':
         split = 'train' if split == 'dev' else split
-        from data_loaders import load_examples_trec
-        if n_shot is not None:
+        from data_loaders import load_examples_trec, load_examples_trec_variants
+        if variant is not None:
+            examples = load_examples_trec_variants(f'{stem}{split}.txt', variant)
+        elif n_shot is not None:
             examples = load_examples_trec(f'{stem}{split}.txt', f'{stem}trec_balanced/16-{s}/train.csv', n_shot)
         else:
             examples = load_examples_trec(f'{stem}{split}.txt')

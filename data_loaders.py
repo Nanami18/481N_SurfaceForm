@@ -598,70 +598,90 @@ def load_examples_sst2(path, ex_path=None, n_shot=None):
     return examples
 
 def get_sst2_variant_template(variant):
-    if variant == 0:
-        premise_template = ' Review: {sentence}\n Answer:' 
-        uncond_premise = ' Positive or Negative?\n Answer:' 
-        hypotheses = [' Negative', ' Positive']
-    elif variant == 1:
-        premise_template = ' Review: {sentence}\n Answer:' 
-        uncond_premise = ' Was the film good or bad?\n Answer:' 
-        hypotheses = [' bad', ' good']
-    elif variant == 2:
-        premise_template = ' My review for last night\'s film: {sentence} The critics agreed that this movie was' 
-        uncond_premise = ' The critics agreed that this movie was' 
-        hypotheses = [' bad', ' good']
-    elif variant == 3:
-        premise_template = ' Here is what our critics think for this month\'s films.\n One of our critics wrote "{sentence}". Her sentiment towards the film was'
-        uncond_premise = ' Her sentiment towards the film was'
-        hypotheses = [' negative.', ' positive.']
-    elif variant == 4:
-        premise_template = ' Critical reception [ edit ]\n In a contemporary review, Roger Ebert wrote "{sentence}". Entertainment Weekly agreed, and the overall critical reception of the film was'
-        uncond_premise = '  Entertainment Weekly agreed, and the overall critical reception of the film was'
-        hypotheses = [' bad.', ' good.']
-    elif variant == 5:
-        premise_template = ' Review: {sentence}\n Positive Review?'
-        uncond_premise = ' Is this a Positive Review?' 
-        hypotheses = [' No', ' Yes']
-    elif variant == 6:
-        premise_template = ' Review: {sentence}\n Question: Is the sentiment of the above review Positive or Negative?\n Answer:'
-        uncond_premise = ' Positive or Negative?\n Answer:' 
-        hypotheses = [' Negative', ' Positive']
-    elif variant == 7:
-        premise_template = ' Review: {sentence}\n Question: Did the author think that the movie was good or bad?\n Answer:'
-        uncond_premise = 'the movie was good or bad?\n Answer:'
-        hypotheses = [' bad', ' good']
-    elif variant == 8:
-        premise_template = ' Question: Did the author of the following tweet think that the movie was good or bad?\n Tweet: {sentence}\n Answer:'
-        uncond_premise =  ' Was the movie was good or bad?\n Tweet: <redacted>\n Answer:'
-        hypotheses = [' bad', ' good']
-    elif variant == 9:
-        premise_template = ' {sentence} My overall feeling was that the movie was'
-        uncond_premise =  '  My overall feeling was that the movie was'
-        hypotheses = [' bad', ' good']
-    elif variant == 10:
-        premise_template = ' {sentence} I' 
-        uncond_premise =  ' After watching the movie, I decided I'
-        hypotheses = [' hated', ' liked']
-    elif variant == 11:
-        premise_template = ' {sentence} My friend asked me if I would give the movie 0 or 5 stars, I said' 
-        uncond_premise =  ' My friend asked me if I would give the movie 0 or 5 stars, I said'
-        hypotheses = [' 0', ' 5']
-    elif variant == 12:
-        premise_template = ' Input: {sentence}\n Sentiment:'
-        uncond_premise =  ' Analyze the sentiment of the previous statement.\n Sentiment:'
-        hypotheses = [' Negative', ' Positive']
-    elif variant == 13:
-        premise_template = ' Review: {sentence}\n Positive:'
-        uncond_premise =  ' Positive:'
-        hypotheses = [' False', ' True']
-    elif variant == 14:
-        premise_template = ' Review: {sentence} Stars:'
-        uncond_premise =  ' How many stars would you give this movie:' 
-        hypotheses = [' 0', ' 5']
-    else:
-        raise NotImplementedError
+   if variant == 0:
+       premise_template = ' Review: {sentence}\n Answer:'
+       uncond_premise = ' Positive or Negative?\n Answer:'
+       hypotheses = [' Negative', ' Positive']
+   elif variant == 1:
+       premise_template = ' Review: {sentence}\n Answer:'
+       uncond_premise = ' Was the film good or bad?\n Answer:'
+       hypotheses = [' bad', ' good']
+   elif variant == 2:
+       premise_template = ' My review for last night\'s film: {sentence} The critics agreed that this movie was'
+       uncond_premise = ' The critics agreed that this movie was'
+       hypotheses = [' bad', ' good']
+   elif variant == 3:
+       premise_template = ' Here is what our critics think for this month\'s films.\n One of our critics wrote "{sentence}". Her sentiment towards the film was'
+       uncond_premise = ' Her sentiment towards the film was'
+       hypotheses = [' negative.', ' positive.']
+   elif variant == 4:
+       premise_template = ' Critical reception [ edit ]\n In a contemporary review, Roger Ebert wrote "{sentence}". Entertainment Weekly agreed, and the overall critical reception of the film was'
+       uncond_premise = '  Entertainment Weekly agreed, and the overall critical reception of the film was'
+       hypotheses = [' bad.', ' good.']
+   elif variant == 5:
+       premise_template = ' Review: {sentence}\n Positive Review?'
+       uncond_premise = ' Is this a Positive Review?'
+       hypotheses = [' No', ' Yes']
+   elif variant == 6:
+       premise_template = ' Review: {sentence}\n Question: Is the sentiment of the above review Positive or Negative?\n Answer:'
+       uncond_premise = ' Positive or Negative?\n Answer:'
+       hypotheses = [' Negative', ' Positive']
+   elif variant == 7:
+       premise_template = ' Review: {sentence}\n Question: Did the author think that the movie was good or bad?\n Answer:'
+       uncond_premise = 'the movie was good or bad?\n Answer:'
+       hypotheses = [' bad', ' good']
+   elif variant == 8:
+       premise_template = ' Question: Did the author of the following tweet think that the movie was good or bad?\n Tweet: {sentence}\n Answer:'
+       uncond_premise =  ' Was the movie was good or bad?\n Tweet: <redacted>\n Answer:'
+       hypotheses = [' bad', ' good']
+   elif variant == 9:
+       premise_template = ' {sentence} My overall feeling was that the movie was'
+       uncond_premise =  '  My overall feeling was that the movie was'
+       hypotheses = [' bad', ' good']
+   elif variant == 10:
+       premise_template = ' {sentence} I'
+       uncond_premise =  ' After watching the movie, I decided I'
+       hypotheses = [' hated', ' liked']
+   elif variant == 11:
+       premise_template = ' {sentence} My friend asked me if I would give the movie 0 or 5 stars, I said'
+       uncond_premise =  ' My friend asked me if I would give the movie 0 or 5 stars, I said'
+       hypotheses = [' 0', ' 5']
+   elif variant == 12:
+       premise_template = ' Input: {sentence}\n Sentiment:'
+       uncond_premise =  ' Analyze the sentiment of the previous statement.\n Sentiment:'
+       hypotheses = [' Negative', ' Positive']
+   elif variant == 13:
+       premise_template = ' Review: {sentence}\n Positive:'
+       uncond_premise =  ' Positive:'
+       hypotheses = [' False', ' True']
+   elif variant == 14:
+       premise_template = ' Review: {sentence} Stars:'
+       uncond_premise =  ' How many stars would you give this movie:'
+       hypotheses = [' 0', ' 5']
+   elif variant == 15:
+       premise_template = ' When I read this message: "{sentence}", I felt like it was positive:'
+       uncond_premise = ' The sentence has a positive sentiment:'
+       hypotheses = [' False', ' True']
+   elif variant == 16:
+       premise_template = ' {sentence} This review conveys a'
+       uncond_premise = ' The review conveys a'
+       hypotheses = [' Positive sentiment', ' Negative sentiment']
+   elif variant == 17:
+       premise_template = ' {sentence} After reading this review, I am more excited about watching the movie:'
+       uncond_premise = ' The review encourages users to watch the movie:'
+       hypotheses = [' False', ' True']
+   elif variant == 18:
+       premise_template = ' It is impossible to read this review: "{sentence}" and not want to watch the movie:'
+       uncond_premise = ' After reading the review, I want to watch the movie:'
+       hypotheses = [' False', ' True']
+   elif variant == 19:
+       premise_template = ' Review: {sentence} Rating (out of 10):'
+       uncond_premise = ' What rating (out of 10) would you give this movie:'
+       hypotheses = [' 0', ' 10']
+   else:
+       raise NotImplementedError
 
-    return premise_template, uncond_premise, hypotheses
+   return premise_template, uncond_premise, hypotheses
 
 def load_examples_sst2_variants(path, variant):
     premise_template, uncond_premise, hypotheses = get_sst2_variant_template(variant)
@@ -739,6 +759,138 @@ def load_examples_agn(path, ex_path=None, n_shot=None):
             examples.append({'options' : options, 'label' : label })
     return examples
 
+def get_sst5_variant_template(variant):
+   if variant == 0:
+       premise_template = "'{sentence}' has a tone that is"
+       uncond_premise = 'The quote has a tone that is'
+       hypotheses = [' very negative.', ' somewhat negative.', ' neutral.', ' somewhat positive.', ' very positive.']
+   elif variant == 1:
+       premise_template = ' Quote: {sentence}\n Sentiment:'
+       uncond_premise = 'The sentiment I get from the quote is'
+       hypotheses = [' the least positive.', ' not very positive.', ' neutral.', ' positive.', ' very positive.']
+   elif variant == 2:
+       premise_template = ' Quote: {sentence}\n Rating:'
+       uncond_premise = 'On a scale of 0 to 5, 0 being very negative, the score of the quote is'
+       hypotheses = [' 0', ' 1', ' 2', ' 3', ' 4', ' 5']
+   elif variant == 3:
+       premise_template = ' After reading this sentence: "{sentence}", I feel'
+       uncond_premise = ' The sentence has a tone that is '
+       hypotheses = [' very negative.', ' negative.', ' neither negative nor positive.', ' positive.', ' very positive.']
+   elif variant == 4:
+       premise_template = ' Critical reception [ edit ]\n In a contemporary review, Roger Ebert wrote "{sentence}". Entertainment Weekly agreed, and the overall critical reception of the film was'
+       uncond_premise = '  Entertainment Weekly agreed, and the overall critical reception of the film was'
+       hypotheses = [' very negative.', ' somewhat negative.', ' neutral.', ' somewhat positive.', ' very positive.']
+   elif variant == 5:
+       premise_template = ' Review: {sentence}\n Question: How did the author feel about the movie?\n Answer:'
+       uncond_premise = ' How did the author feel about the movie?'
+       hypotheses = [' very bad.', ' bad.', ' indifferent.', ' good.', ' very good.']
+   elif variant == 6:
+       premise_template = ' {sentence} My overall feeling was that the movie was'
+       uncond_premise = '  My overall feeling was that the movie was'
+       hypotheses = [' very bad.', ' bad.', ' indifferent.', ' good.', ' very good.']
+   elif variant == 7:
+       premise_template = ' {sentence} I'
+       uncond_premise = ' After watching the movie, I decided I'
+       hypotheses = [' hated.', ' somewhat hated.', ' neither loved nor hated.', ' loved.', ' hated.']
+   elif variant == 8:
+       premise_template = ' {sentence} My friend asked me if I would give the movie 0 or 5 stars, I said'
+       uncond_premise = ' My friend asked me if I would give the movie 0 or 5 stars, I said'
+       hypotheses = [' 0', ' 1', ' 2', ' 3', ' 4', ' 5']
+   elif variant == 9:
+       premise_template = ' Input: {sentence}\n Sentiment:'
+       uncond_premise = ' Analyze the sentiment of the previous statement.\n Sentiment:'
+       hypotheses = [' Very negative.', ' Negative.', ' Neutral.', ' Positive.', ' Very positive.']
+   else:
+       raise NotImplementedError
+   return premise_template, uncond_premise, hypotheses
+
+def load_examples_sst5_variants(path, variant):
+   premise_template, uncond_premise, hypotheses = get_sst5_variant_template(variant)
+
+   data = []
+   with open(path) as f:
+       for line in f:
+           l, s = line.strip().split('\t')
+           label = int(l[-1])
+           d = {}
+           d['correct_hypothesis'] = label - 1
+           d['sentence'] = s
+           data.append(d)
+
+   examples = []
+   for d in data:
+       premise = premise_template.format(sentence=d['sentence'])
+       options = []
+       for h in hypotheses:
+           o = {}
+           h = h + '<|endoftext|>'
+           o['premise'] = premise
+           o['hypothesis'] = h
+           o['uncond_premise'] = uncond_premise
+           o['uncond_hypothesis'] = h
+           options.append(o)
+       label = d['correct_hypothesis']
+       examples.append({'options': options, 'label': label})
+   return examples
+
+def get_agn_variant_template(variant):
+   if variant == 0:
+       premise_template = ' title: {title}\n summary: {summary}\n topic:'
+       uncond_premise = '\n topic:'
+   elif variant == 1:
+       premise_template = '{summary}. \nThis is about:'
+       uncond_premise = '\n This is about:'
+   elif variant == 2:
+       premise_template = ' The newspage with title "{title}" and summary "{summary}" talks about:'
+       uncond_premise = ' The newspage talks about:'
+   elif variant == 3:
+       premise_template = ' The newspage with title "{title}" is about:'
+       uncond_premise = ' The newspage is about:'
+   elif variant == 4:
+       premise_template = ' After reading {title}: {summary}, I deduced that it is about:'
+       uncond_premise = '  The newspage is about:'
+   elif variant == 5:
+       premise_template = ' title: {title}\n topic:'
+       uncond_premise = ' \n topic:'
+   elif variant == 6:
+       premise_template = ' The topic that this paper ({title}: {summary}) discuss is:'
+       uncond_premise = ' The topic that this paper discusses is:'
+   elif variant == 7:
+       premise_template = ' When reading the article "{title}: {summary}", one can deduce that the topic is:'
+       uncond_premise = ' The topic is:'
+   elif variant == 8:
+       premise_template = ' My friend asked me what this article was about:\nTitle: {title}\nSummary: {summary}.\nI responded with:'
+       uncond_premise = ' I responded to my friend with'
+   elif variant == 9:
+       premise_template = ' Input: {title}:{summary}\n Topic:'
+       uncond_premise = ' Determine the topic discussed in the article.\nAnswer:'
+   else:
+       raise NotImplementedError
+   return premise_template, uncond_premise
+
+def load_examples_agn_variants(path, variant):
+   premise_template, uncond_premise = get_agn_variant_template(variant)
+
+   topics = [ 'World', 'Sports', 'Business', 'Science' ]
+   examples = []
+   with open(path) as fp:
+       reader = csv.DictReader(fp)
+       for row in reader:
+           label = int(row['Class Index'])-1
+           title = row['Title']
+           summary = row['Description']
+           premise = premise_template.format(title=title, summary=summary)
+           options = []
+           for h in topics:
+               o = {}
+               o['premise'] = premise
+               o['hypothesis'] = ' ' + h.lower()
+               o['uncond_premise'] = uncond_premise
+               o['uncond_hypothesis'] = ' ' + h.lower()
+               options.append(o)
+           label = label
+           examples.append({'options' : options, 'label' : label })
+   return examples
 
 def load_examples_dbpedia(path):
     lmnames = (
@@ -776,6 +928,87 @@ def load_examples_dbpedia(path):
                 options.append(o)
             examples.append({'options' : options, 'label' : label })
     return examples
+
+def get_obqa_variant_template(variant):
+   if variant == 0:
+       premise_template = ' Premise: {premise}\n answer:'
+       uncond_premise = '\n answer:'
+   elif variant == 1:
+       premise_template = '{premise}. \nThe answer to this is:'
+       uncond_premise = '\nThe answer to this is:'
+   elif variant == 2:
+       premise_template = ' After reading "{premise}", I can answer with:'
+       uncond_premise = ' I can answer the premise with:'
+   elif variant == 3:
+       premise_template = ' The answer to "{premise}" is:'
+       uncond_premise = ' The answer is:'
+   elif variant == 4:
+       premise_template = ' Text: {premise}\n response:'
+       uncond_premise = '\n response:'
+   elif variant == 5:
+       premise_template = ' {premise}:'
+       uncond_premise = ' \n answer:'
+   elif variant == 6:
+       premise_template = ' I can answer "{premise}" with:'
+       uncond_premise = ' \n I can answer with:'
+   elif variant == 7:
+       premise_template = ' When reading "{premise}", one can respond with:'
+       uncond_premise = ' \n I can respond with:'
+   elif variant == 8:
+       premise_template = ' My friend asked me about:\n{premise}.\nI responded with:'
+       uncond_premise = ' I responded to my friend with'
+   elif variant == 9:
+       premise_template = ' Input: {premise}\n Answer:'
+       uncond_premise = ' \nAnswer:'
+   else:
+       raise NotImplementedError
+   return premise_template, uncond_premise
+
+def load_examples_obqa_variants(path, variant):
+   premise_template, uncond_premise = get_obqa_variant_template(variant)
+   with open(path) as lines:
+       idx2abc = { 0 : 'A', 1 : 'B', 2 : 'C', 3 : 'D' }
+       abc2idx = { 'A' : 0, 'B' : 1, 'C' : 2, 'D' : 3 }
+
+       examples = []
+       for line in lines:
+           j = json.loads(line)
+           d = {}
+
+           label = j['answerKey']
+           correct_hypothesis = abc2idx[label]
+           q = j['question']
+           stem = q['stem']
+           choices = q['choices']
+           hypotheses = []
+           for idx, choice in enumerate(choices):
+               text = choice['text']
+               label = choice['label']
+               assert(abc2idx[label] == idx)
+               hypotheses.append(text)
+
+           d['premise'] = stem
+           d['hypotheses'] = hypotheses
+           d['correct_hypothesis'] = correct_hypothesis
+
+           d['stem'] = stem
+           d['answers'] = choices
+           d['label'] = label
+
+           premise = d['premise']
+           options = []
+           for h in d['hypotheses']:
+               o = {}
+               h = ' ' + h
+               o['premise'] = premise_template.format(premise=premise)
+               o['hypothesis'] = h
+               o['uncond_premise'] = uncond_premise
+               o['uncond_hypothesis'] = h
+               options.append(o)
+           label = d['correct_hypothesis']
+           examples.append({'options' : options, 'label' : label })
+   return examples
+
 
 def load_examples_obqa(path, ex_path=None, n_shot=None):
     if ex_path is None:
@@ -862,6 +1095,64 @@ def proc_question(s):
     s = s + '?'
     return s
 
+def get_boolq_variant_template(variant):
+   if variant == 0:
+       premise_template = ' title: {title}\n question: {question}\n answer:'
+       uncond_premise = ' \n answer:'
+   elif variant == 1:
+       premise_template = 'When asked: "{question}", I can answer with'
+       uncond_premise = 'I can answer this question with'
+   elif variant == 2:
+       premise_template = 'Question: {question}\nAnswer: '
+       uncond_premise = 'Answer to the question:'
+   elif variant == 3:
+       premise_template = ' The best way to answer "{title}: {question}" is'
+       uncond_premise = ' We answer this question as follows:'
+   elif variant == 4:
+       premise_template = ' After reading this question: "{question}", one can answer with'
+       uncond_premise = '  One can answer this question with'
+   elif variant == 5:
+       premise_template = ' Title: {title}\n Question: {question}\nPossible answer:'
+       uncond_premise = ' Possible answer to this question:'
+   elif variant == 6:
+       premise_template = ' The answer that "{title}: {question}" expects is'
+       uncond_premise = ' Answer this question expects:'
+   elif variant == 7:
+       premise_template = ' When the author read the question "{title}: {question}", they answered with'
+       uncond_premise = ' The author answered the question with'
+   elif variant == 8:
+       premise_template = ' My friend asked me: {question}. I responded with:'
+       uncond_premise = ' I responded to my friend with'
+   elif variant == 9:
+       premise_template = ' Input: {title}: {question}\n Possible answer:'
+       uncond_premise = ' Determine the of answer for the previous question.\nType of answer:'
+   else:
+       raise NotImplementedError
+   return premise_template, uncond_premise
+
+def load_examples_boolq_variants(path, variant):
+   premise_template, uncond_premise = get_boolq_variant_template(variant)
+   data = []
+   with open(path) as f:
+       for line in f:
+           data += [json.loads(line)]
+
+   examples = []
+   for d in data:
+       options = []
+       p = premise_template.format(title=d["title"], question=proc_question(d["question"]))
+       for h in [' yes', ' no']:
+           o = {}
+           o['premise'] = p
+           o['hypothesis'] = h
+           o['uncond_premise'] = uncond_premise
+           o['uncond_hypothesis'] = h
+           options.append(o)
+       label = 1 if not d['answer'] else 0
+       examples.append({'options': options, 'label': label})
+   return examples
+
+
 def load_examples_boolq(path):
     data = []
     with open(path) as f:
@@ -882,6 +1173,75 @@ def load_examples_boolq(path):
             options.append(o)
         label = 1 if not d['answer'] else 0 #.strip().lower() == 'false' else 1
         examples.append({'options' : options, 'label' : label })
+    return examples
+
+def get_trec_variant_template(variant):
+   if variant == 0:
+       premise_template = ' {question} The answer to this question will be'
+       uncond_premise = ' The answer to this question will be'
+   elif variant == 1:
+       premise_template = 'When asked: "{question}", I can answer with'
+       uncond_premise = 'I can answer this question with'
+   elif variant == 2:
+       premise_template = 'Question: {question}\nType of answer: '
+       uncond_premise = 'Type of answer to the question:'
+   elif variant == 3:
+       premise_template = ' The best way to answer "{question}" is by using'
+       uncond_premise = ' We answer this question by using'
+   elif variant == 4:
+       premise_template = ' After reading this question: "{question}", one can answer with'
+       uncond_premise = '  One can answer this question with'
+   elif variant == 5:
+       premise_template = ' Question: {question}\nPossible answer:'
+       uncond_premise = ' Possible answer to this question:'
+   elif variant == 6:
+       premise_template = ' The type of answer that "{question}" expects is'
+       uncond_premise = ' Type of answer this question expects:'
+   elif variant == 7:
+       premise_template = ' When the author read the question "{question}", they answered with'
+       uncond_premise = ' The author answered the question with'
+   elif variant == 8:
+       premise_template = ' My friend asked me: {question}. I responded with:'
+       uncond_premise = ' I responded to my friend with'
+   elif variant == 9:
+       premise_template = ' Input: {question}\n Possible answer:'
+       uncond_premise = ' Determine the type of answer for the previous question.\nType of answer:'
+   else:
+       raise NotImplementedError
+   return premise_template, uncond_premise
+
+def load_examples_trec_variants(path, variant):
+   premise_template, uncond_premise = get_trec_variant_template(variant)
+   label2template = [(0, 'DESC', 'a description.'),
+                     (1, 'ENTY', 'an entity.'),
+                     (2, 'LOC', 'a location.'),
+                     (3, 'NUM', 'a number.'),
+                     (4, 'ABBR', 'an abbreviation.'),
+                     (5, 'HUM', 'a person.')]
+   # get index of the label string
+
+   examples = []
+
+   # params
+   with open(path) as f:
+       for line in f:
+           label = line[:line.index(' ')].split(':')[0]
+           question = detokenizer(line[line.index(' ') + 1:]).strip()
+
+           ex = {}
+           options = []
+           for label_idx, label_surface_form, h in label2template:
+               opt = {}
+               opt['premise'] = premise_template.format(question=question)
+               opt['hypothesis'] = f' {h}'
+               opt['uncond_premise'] = uncond_premise
+               opt['uncond_hypothesis'] = f' {h}'
+               options.append(opt)
+               if label_surface_form == label:
+                   ex['label'] = label_idx
+           ex['options'] = options
+           examples.append(ex)
+
     return examples
 
 def load_examples_trec(path, ex_path=None, n_shot=None):
