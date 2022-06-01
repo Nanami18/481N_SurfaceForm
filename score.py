@@ -142,7 +142,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default='xl')
     parser.add_argument('--n-shot', type=int, default=0)
     parser.add_argument('--variant', type=int, default=None)
-    parser.add_argument('--split', type=str, default='dev')
+    parser.add_argument('--split', type=str, default='test')
     parser.add_argument('--batch', type=int, default=10)
     parser.add_argument('--sample', type=int, default=None)
     parser.add_argument('--seed', type=int, default=0)
