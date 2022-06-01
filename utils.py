@@ -368,6 +368,9 @@ def inference_autobatch( model, encoder, example, batch = 1, prelog = False, cac
                                         [opt['uncond_hypothesis'] for opt in options],
                                         model,
                                         cache=cache,calculate = calculate, batch=batch)
+        joint_ce, joint_ce_lens, _ = cross_entropy_list_gpt3([':' for opt in options],
+                                     [opt['premise'] + opt['hypothesis'] for opt in options],
+                                     model, cache=cache, batch=batch, calculate = calculate)
     else:
         ## get conditional CEs
         cond_ce = cross_entropy_list([opt['premise'] for opt in options], 

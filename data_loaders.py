@@ -392,7 +392,7 @@ def load_examples_snli(path):
 
 
 
-def load_examples_sst5(path, ex_path=None, n_shot=None):
+def load_examples_sst5(path, ex_path=None, n_shot=None, balanced=False):
     data = []
     with open(path) as f:
         for line in f:
@@ -407,31 +407,72 @@ def load_examples_sst5(path, ex_path=None, n_shot=None):
         assert(n_shot is None)
         fewshot_prefix = None
     else:
-        assert(n_shot is not None)
-        with open(ex_path) as lines:
-            fewshot_examples = []
-            for i, line in enumerate(lines):
-                l, s = line.strip().split('\t')
-                fewshot_prefix = f" {s}:"
-                label = int(l[-1])
-                if label == 1:
-                    fewshot_prefix = f"{fewshot_prefix} very negative."
-                elif label == 2:
-                    fewshot_prefix = f"{fewshot_prefix} somewhat negative."
-                elif label == 3:
-                    fewshot_prefix = f"{fewshot_prefix} neutral."
-                elif label == 4:
-                    fewshot_prefix = f"{fewshot_prefix} somewhat positive."
-                elif label == 5:
-                    fewshot_prefix = f"{fewshot_prefix} very positive."
-                else:
-                    raise NotImplementedError("this should be impossible")
-                fewshot_examples.append(fewshot_prefix)
-                
-        random.shuffle(fewshot_examples)
-        fewshot_prefix = ''
-        for ex in fewshot_examples[:n_shot]:
-            fewshot_prefix = fewshot_prefix + ex
+        if balanced:
+            assert(n_shot is not None)
+            with open(ex_path) as lines:
+                fewshot_examples = []
+                for i, line in enumerate(lines):
+                    l, s = line.strip().split('\t')
+                    fewshot_prefix = f" {s}:"
+                    label = int(l[-1])
+                    if label == 1:
+                        fewshot_prefix = f"{fewshot_prefix} very negative."
+                    elif label == 2:
+                        fewshot_prefix = f"{fewshot_prefix} somewhat negative."
+                    elif label == 3:
+                        fewshot_prefix = f"{fewshot_prefix} neutral."
+                    elif label == 4:
+                        fewshot_prefix = f"{fewshot_prefix} somewhat positive."
+                    elif label == 5:
+                        fewshot_prefix = f"{fewshot_prefix} very positive."
+                    else:
+                        raise NotImplementedError("this should be impossible")
+                    fewshot_examples.append(fewshot_prefix)
+                    
+            random.shuffle(fewshot_examples)
+            fewshot_prefix = ''
+            for ex in fewshot_examples[:n_shot]:
+                fewshot_prefix = fewshot_prefix + ex
+        else: 
+            with open(ex_path) as lines:
+                fewshot_examples = []
+                labels = []
+                for i, line in enumerate(lines):
+                    l, s = line.strip().split('\t')
+                    fewshot_prefix = f" {s}:"
+                    label = int(l[-1])
+                    if label == 1:
+                        fewshot_prefix = f"{fewshot_prefix} very negative."
+                    elif label == 2:
+                        fewshot_prefix = f"{fewshot_prefix} somewhat negative."
+                    elif label == 3:
+                        fewshot_prefix = f"{fewshot_prefix} neutral."
+                    elif label == 4:
+                        fewshot_prefix = f"{fewshot_prefix} somewhat positive."
+                    elif label == 5:
+                        fewshot_prefix = f"{fewshot_prefix} very positive."
+                    else:
+                        raise NotImplementedError("this should be impossible")
+                    fewshot_examples.append(fewshot_prefix)
+                    labels.append(label)
+                    
+            random.shuffle(fewshot_examples)
+            label_count = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+            fewshot_prefix = ''
+            per_label = n_shot//len(label_count)
+            rest = n_shots - per_label*len(label_count)
+            until = 0
+            for ex, lb in zip(fewshot_examples, label):
+                if label_count[lb] >= per_label:
+                    until += 1
+                    continue
+                label_count[lb] += 1
+                fewshot_prefix = fewshot_prefix + ex
+                until += 1
+            
+            for i in range(rest):
+                fewshot_prefix += fewshot_examples[until]
+                until += 1 
 
     examples = []
     for d in data:
@@ -478,9 +519,9 @@ def load_examples_sst2(path, ex_path=None, n_shot=None):
                 if label == 0:
                     continue
                 elif label > 0:
-                    fewshot_prefix = f"{fewshot_prefix} has a tone that is positive\n"
+                    fewshot_prefix = f"{fewshot_prefix} positive\n"
                 elif label < 0:
-                    fewshot_prefix = f"{fewshot_prefix} has a tone that is negative\n"
+                    fewshot_prefix = f"{fewshot_prefix} negative\n"
                 else:
                     raise NotImplementedError("this should be impossible")
                 fewshot_examples.append(fewshot_prefix)
