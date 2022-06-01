@@ -1,6 +1,6 @@
 # Surface Form Competition
 
-This is the repo for reproducing the paper "Surface Form Competition: Why the Highest Probability Answer Isn't Always Right". We adopted scripts from the [origianl repo](https://peterwestuw.github.io/surface-form-competition-project/) for downloading/processing datasets and running the model, and added features on top of it.
+This is the repo for reproducing the paper "Surface Form Competition: Why the Highest Probability Answer Isn't Always Right". We adopted scripts from the [original repo](https://peterwestuw.github.io/surface-form-competition-project/) for downloading/processing datasets and running the model, and added features on top of it.
 
 ## Dependencies
 We use python3 and pytorch 1.7.0, but we do not use cutting-edge features from either and expect to be largely forward and backward compatible. That is not a guarantee or promise.
