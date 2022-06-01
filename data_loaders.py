@@ -438,7 +438,7 @@ def load_examples_snli(path):
 
 
 
-def load_examples_sst5(path, ex_path=None, n_shot=None, balanced=False):
+def load_examples_sst5(path, ex_path=None, n_shot=None, balanced=True):
     data = []
     with open(path) as f:
         for line in f:
@@ -453,7 +453,7 @@ def load_examples_sst5(path, ex_path=None, n_shot=None, balanced=False):
         assert(n_shot is None)
         fewshot_prefix = None
     else:
-        if balanced:
+        if not balanced:
             assert(n_shot is not None)
             with open(ex_path) as lines:
                 fewshot_examples = []
@@ -462,15 +462,15 @@ def load_examples_sst5(path, ex_path=None, n_shot=None, balanced=False):
                     fewshot_prefix = f" {s}:"
                     label = int(l[-1])
                     if label == 1:
-                        fewshot_prefix = f"{fewshot_prefix} very negative."
+                        fewshot_prefix = f"{fewshot_prefix} very negative.\n"
                     elif label == 2:
-                        fewshot_prefix = f"{fewshot_prefix} somewhat negative."
+                        fewshot_prefix = f"{fewshot_prefix} somewhat negative.\n"
                     elif label == 3:
-                        fewshot_prefix = f"{fewshot_prefix} neutral."
+                        fewshot_prefix = f"{fewshot_prefix} neutral.\n"
                     elif label == 4:
-                        fewshot_prefix = f"{fewshot_prefix} somewhat positive."
+                        fewshot_prefix = f"{fewshot_prefix} somewhat positive.\n"
                     elif label == 5:
-                        fewshot_prefix = f"{fewshot_prefix} very positive."
+                        fewshot_prefix = f"{fewshot_prefix} very positive.\n"
                     else:
                         raise NotImplementedError("this should be impossible")
                     fewshot_examples.append(fewshot_prefix)
@@ -481,6 +481,8 @@ def load_examples_sst5(path, ex_path=None, n_shot=None, balanced=False):
                 fewshot_prefix = fewshot_prefix + ex
         else: 
             with open(ex_path) as lines:
+                lines = list(lines)
+                random.shuffle(lines)
                 fewshot_examples = []
                 labels = []
                 for i, line in enumerate(lines):
@@ -488,29 +490,30 @@ def load_examples_sst5(path, ex_path=None, n_shot=None, balanced=False):
                     fewshot_prefix = f" {s}:"
                     label = int(l[-1])
                     if label == 1:
-                        fewshot_prefix = f"{fewshot_prefix} very negative."
+                        fewshot_prefix = f"{fewshot_prefix} very negative.\n"
                     elif label == 2:
-                        fewshot_prefix = f"{fewshot_prefix} somewhat negative."
+                        fewshot_prefix = f"{fewshot_prefix} somewhat negative.\n"
                     elif label == 3:
-                        fewshot_prefix = f"{fewshot_prefix} neutral."
+                        fewshot_prefix = f"{fewshot_prefix} neutral.\n"
                     elif label == 4:
-                        fewshot_prefix = f"{fewshot_prefix} somewhat positive."
+                        fewshot_prefix = f"{fewshot_prefix} somewhat positive.\n"
                     elif label == 5:
-                        fewshot_prefix = f"{fewshot_prefix} very positive."
+                        fewshot_prefix = f"{fewshot_prefix} very positive.\n"
                     else:
                         raise NotImplementedError("this should be impossible")
                     fewshot_examples.append(fewshot_prefix)
                     labels.append(label)
                     
-            random.shuffle(fewshot_examples)
             label_count = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
             fewshot_prefix = ''
             per_label = n_shot//len(label_count)
-            rest = n_shots - per_label*len(label_count)
+            rest = n_shot - per_label*len(label_count)
             until = 0
-            for ex, lb in zip(fewshot_examples, label):
+            for ex, lb in zip(fewshot_examples, labels):
                 if label_count[lb] >= per_label:
                     until += 1
+                    if until >= per_label*len(label_count):
+                        break
                     continue
                 label_count[lb] += 1
                 fewshot_prefix = fewshot_prefix + ex
@@ -579,7 +582,7 @@ def load_examples_sst2(path, ex_path=None, n_shot=None):
 
     examples = []
     for d in data:
-        premise = f"\"{d['sentence']}\" has a tone that is"
+        premise = f"{d['sentence']}:"
         if fewshot_prefix is not None:
             premise = fewshot_prefix + premise
         options = []
@@ -691,9 +694,30 @@ def load_examples_sst2_variants(path, variant):
     return examples
 
 
-def load_examples_agn(path):
+def load_examples_agn(path, ex_path=None, n_shot=None):
     topics = [ 'World', 'Sports', 'Business', 'Science' ] 
     examples = []
+
+    if n_shot is not None:
+        assert(ex_path is not None)
+        with open(ex_path, 'r') as f:
+            lines = f.readlines()[1:]
+            random.shuffle(lines)
+            fewshot_examples = []
+            for i, line in enumerate(lines):
+                tokens = line.strip().split('\t')
+                l = tokens[-1]
+                s = '\t'.join(tokens[:-1])
+                fewshot_prefix = f" {s}"
+                label = int(l)
+                fewshot_prefix = f"{fewshot_prefix} {topics[label]}\n"
+                fewshot_examples.append(fewshot_prefix)
+            
+            fewshot_prefix = ''
+            for ex in fewshot_examples[:n_shot]:
+                fewshot_prefix = fewshot_prefix + ex
+
+
     with open(path) as fp:
         reader = csv.DictReader(fp)
         for row in reader:
@@ -705,6 +729,8 @@ def load_examples_agn(path):
             for h in topics:
                 o = {}
                 o['premise'] = premise
+                if n_shot is not None:
+                    o['premise'] = fewshot_prefix + o['premise']
                 o['hypothesis'] = ' ' + h.lower()
                 o['uncond_premise'] = '\n topic:'
                 o['uncond_hypothesis'] = ' ' + h.lower()
@@ -868,6 +894,12 @@ def load_examples_trec(path, ex_path=None, n_shot=None):
                       (5, 'HUM', 'a person.')]
     # get index of the label string
 
+    fewshot_label2template = [(0, 'DESC', 'a description.'),
+                                (1, 'ENTY', 'an entity.'),
+                                (2, 'ABBR', 'an abbreviation.'),
+                                (3, 'HUM', 'a person.'),
+                                (4, 'LOC', 'a location.'),
+                                (5, 'NUM', 'a number.'),]
     examples = []
     fewshot_prefix = None
 
@@ -881,9 +913,10 @@ def load_examples_trec(path, ex_path=None, n_shot=None):
                 s = ','.join(tokens[1:])
                 fewshot_prefix = f" {s}"
                 label = int(l)
-                fewshot_prefix = f"{fewshot_prefix} The answer to this question will be {label2template[label][2]}\n"
+                fewshot_prefix = f"{fewshot_prefix} {fewshot_label2template[label][2]}\n"
                 fewshot_examples.append(fewshot_prefix)
             
+            random.shuffle(fewshot_examples)
             fewshot_prefix = ''
             for ex in fewshot_examples[:n_shot]:
                 fewshot_prefix = fewshot_prefix + ex
